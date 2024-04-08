@@ -65,3 +65,110 @@ let laptop = {company:"hp", year: 2020, color:'black'}
 laptop.company = 'dell'
 
 //laptop.company = 5 (error)
+
+// ----  typescript function ----------
+
+function multipleOfFive(num:number):number{
+    return num * 5
+}
+
+const number1 = multipleOfFive(15)
+console.log(number1);
+
+// ------ challenge on function -----
+
+const scores:number[] = [23, 45, 56,78]
+function isNumberInScore(num:number): boolean {
+    return scores.includes(num)
+}
+
+console.log(isNumberInScore(45))
+console.log(isNumberInScore(7))
+
+// --function optional parameter --
+
+function calculatePrice(price:number, discount?:number): number{
+    return price - (discount || 0)
+}
+
+console.log(calculatePrice(200, 80))
+console.log(calculatePrice(200))
+//function calculatePrice(price:number, discount?:number): number{
+ //   return price - discount
+//} (error ; discount is possibly undefined)
+
+// -- function default parameter 
+
+function calculateScore(score:number, penalty:number = 0):number{
+    return score - penalty
+}
+
+console.log(calculateScore(45, 10))
+console.log(calculateScore(45))
+
+//typescript rest parameter
+
+function sum(message: string, ...numbers:number[]):string{
+    const doubled = numbers.map((number :number):number=>{
+        return number * 2
+    })
+
+    console.log(doubled)
+
+    const total:number = numbers.reduce((prev :number, curr:number):number=> {
+        return prev + curr
+    }, 0)
+    console .log(total)
+    return `${message}${total}`
+
+}
+
+sum("the sum is : ", 1,2,3,4,5);
+
+//type guard 
+
+function processInput(input:string|number):void{
+    if(typeof input === 'number'){
+        console.log(input * 2)
+    }else{
+        console.log(input.toUpperCase())
+    }
+}
+
+processInput("sarilus");
+processInput(5);
+
+//---- parameter of object type and destructuring
+
+function createEmployee({id}:{id:number}):{id:number ; isActive:boolean}{
+    return {id, isActive : id % 2 === 0}
+}
+const firstEmployee = createEmployee({id:1})
+const secondEmployee = createEmployee({id:2})
+const employee3Id = {id:3}
+const employee4Id = {id:4}
+console.log(firstEmployee, secondEmployee, createEmployee(employee3Id),createEmployee(employee4Id))
+
+function createStudent(student:{id:number; name:string}){
+    console.log(`welcome to the course ${student.name.toUpperCase()}!!!!`)
+}
+
+/* function createStudent({id, name}:{id:number; name:string}){
+    console.log(`welcome to the course ${name.toUpperCase()}!!!!`)
+}  the same as above*/
+
+const newStudent = {id:34, name:'rica'}
+createStudent(newStudent);
+
+//challenge 
+function processData(input:string | number, config:{reverse:boolean} = {reverse:false}):string | number{
+    if(typeof input === 'number'){
+        return input * input
+    }else{
+        return config.reverse ? input.split("").reverse().join("").toUpperCase() : input.toUpperCase();
+    }
+}
+
+console.log(processData('life'))
+console.log(processData('life',{reverse:true}))
+console.log(processData(5))
