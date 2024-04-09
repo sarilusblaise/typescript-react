@@ -172,3 +172,304 @@ function processData(input:string | number, config:{reverse:boolean} = {reverse:
 console.log(processData('life'))
 console.log(processData('life',{reverse:true}))
 console.log(processData(5))
+
+//---------------typescript type aliases----------------
+
+// -------example without type aliases : it's repetitive , required modification in different place, less scalable---------
+
+const john: { id: number; name: string; isActive: boolean } = {
+  id: 1,
+  name: 'john',
+  isActive: true,
+};
+const susan: { id: number; name: string; isActive: boolean } = {
+  id: 1,
+  name: 'susan',
+  isActive: false,
+};
+
+function createUser(user: { id: number; name: string; isActive: boolean }): {
+  id: number;
+  name: string;
+  isActive: boolean;
+} {
+  console.log(`Hello there ${user.name.toUpperCase()} !!!`);
+
+  return user;
+}
+
+// -------example with type aliases : it's not repetitive , required modification in one place, more scalable---------
+
+type User = { id: number; name: string; isActive: boolean }
+
+const joh: User = {
+  id: 1,
+  name: 'john',
+  isActive: true,
+};
+const sus: User = {
+  id: 1,
+  name: 'susan',
+  isActive: false,
+};
+
+function createNewUser(user: User): User {
+  console.log(`Hello there ${user.name.toUpperCase()} !!!`);
+
+  return user;
+}
+
+console.log(createNewUser(sus))
+console.log(createNewUser(joh))
+
+//--- type aliases challenge---
+
+type Employee = {id:number, name:string, department:string}
+type Manager = {id:number, name:string, employees:Employee[]}
+
+type Staff = Employee | Manager
+
+function printStaffDetails(staff:Staff):void{
+    if('employees' in staff){
+        console.log(`${staff.name} is the manager of ${staff.employees.length}`)
+    }else{
+        console.log(`${staff.name} is in the ${staff.department} department`)
+    }
+}
+
+const Alice:Employee = {id:1, name:"Alice", department:'marketing'}
+const James:Employee = {id:1, name:"James", department:'sales'}
+const Jules:Manager = {id:1, name:"James", employees:[Alice, James]}
+
+console.log(printStaffDetails(Alice))
+console.log(printStaffDetails(James))
+console.log(printStaffDetails(Jules))
+
+// typescript intersection type 
+
+type Book ={id:number, name:string, price:number};
+type DiscountedBook = Book & {discount:number}
+const book1:Book ={id:1, name:'saison sauvage', price:15}
+const book2:Book ={id:1, name:'La belle amour humaine', price:25}
+
+const discountedBook:DiscountedBook = {id:1, name:'Zoune', price:45, discount:10}
+
+console.log(discountedBook)
+
+//================typescript interface=================
+
+interface Car {
+   readonly id: number,
+   model:string,
+   company:string
+   //method 
+   printModel():void,
+   printCompany(message:string):string
+}
+
+const car1: Car = {
+    id:1,
+    model:'toyota',
+    company:'ford',
+    printModel(){
+        console.log(this.model)
+    },
+    printCompany(message:string):string{
+        console.log(`${message} ${this.company}`)
+        return `${message} ${this.company}`
+    }
+}
+
+car1.printCompany('the company is');
+car1.printModel()
+
+// interface challenge 
+
+interface Computer {
+    readonly id:number,
+    brand:string,
+    ram:number,
+    storage?:number,
+    upgradeRam(newRam:number):number
+}
+
+const computer1:Computer = {id:1, brand:"random brand",ram:8, upgradeRam(addRam){
+    console.log(this.ram + addRam)
+    this.ram += addRam
+    return this.ram + addRam
+}}
+
+console.log(computer1)
+
+computer1.storage = 256
+
+console.log(computer1)
+
+console.log(computer1.upgradeRam(6))
+
+console.log(computer1)
+
+// -------interface: merging , extend , typeGuard-----
+interface Person{
+name:string,
+getDetails():string,
+}
+
+interface DogOwner{
+    dogName:string,
+    getDogDetails():string,
+}
+
+// Merging (reopening) an interface in TypeScript is a process where you declare an interface with the same name more than once, and TypeScript will merge their members.
+
+// Merging the interface
+interface Person{
+    age:number,
+}
+
+const person:Person = {name:'John', age:30, getDetails(){
+    return  `Name: ${this.name}, Age: ${this.age}`;
+}}
+
+// Extending an interface in TypeScript is a way to create a new interface that inherits the properties and methods of an existing interface. You use the extends keyword to do this. When you extend an interface, the new interface will have all the members of the base interface, plus any new members that you add.
+
+// Extending the interface
+
+interface Vendor extends Person{
+    vendorId: number;
+}
+
+const vendor: Vendor = {
+name: 'jane',
+age:34,
+  vendorId: 123,
+  getDetails() {
+    return `Name: ${this.name}, Age: ${this.age}, Employee ID: ${this.vendorId}`;
+  },
+}
+
+// Interface multiple inheritance
+interface Manager1 extends Person, DogOwner{
+    managePeople():void,
+}
+
+const manager: Manager1 = {
+    name: 'Bob',
+  age: 35,
+  dogName: 'Rex',
+  getDetails() {
+    return `Name: ${this.name}, Age: ${this.age}`;
+  },
+  getDogDetails() {
+    return `Dog Name: ${this.dogName}`;
+  },
+  managePeople() {
+    console.log('Managing people...');
+  },
+}
+
+console.log(manager.getDetails())
+console.log(manager.getDogDetails()) 
+manager.managePeople()
+
+
+// =============Generics - Fundamentals================
+// we can create array with two syntaxes
+
+// first one using bracket
+let array1 : string[] = ["Jean", "Marise", 'Skendia']
+let array2 : number[] = [1, 2, 3 ]
+let array3 : boolean[] = [true, false, true]
+
+// second one using interface and generic 
+
+let array4:Array<string> = ['mars', 'april', 'may']
+let array5:Array<number> = [5,6,7]
+let array6:Array<boolean> = [true, false , false, true]
+
+// generic function 
+
+// why use generic : generic help writing concise code , less repetitive or dry code , work with any type 
+
+// here is a repetitive code 
+
+function createString(arg:string):string{
+    return arg
+}
+
+function createNumber(arg:number):number{
+    return arg
+}
+
+function createBoolean(arg:boolean):boolean{
+    return arg
+}
+
+// here is a the concise one code with generic
+
+function genericFunction<T>(arg:T):T{
+    return arg
+}
+
+const numberValue = genericFunction<number>(8)
+const stringValue = genericFunction<string>("life")
+const booleanValue = genericFunction<boolean>(true)
+
+// interface with generic
+
+interface GenericInterface<T>{
+    value:T;
+    getValue:() => T;
+}
+
+const genericString:GenericInterface<string> = {
+    value:"hello",
+    getValue() {
+        return this.value
+    },
+}
+
+console.log(genericString);
+console.log(genericString.getValue());
+
+async function somFunc():Promise<string>{
+    return "life"
+}
+
+// more example on generic function
+
+function generateStringArray(length:number, value:string):string[]{
+    let result : string[] = []
+    result = Array(length).fill(value)
+    return result 
+}
+
+function generateNumberArray(length:number, value:number):number[]{
+    let result : number[] = []
+    result = Array(length).fill(value)
+    return result 
+}
+
+// convert the function above in generic that accept any type and generate array of any type 
+
+function genericGenerateArray<T>(length:number, value:T):T[]{
+    let result:T[] = []
+    result = Array(length).fill(value)
+    return result
+}
+
+let arrayString = genericGenerateArray<string>(10,"life")
+let arrayNumber = genericGenerateArray<number>(10,500)
+
+console.log(arrayString)
+console.log(arrayNumber)
+
+// generic function with specific type : constraint
+function processValue<T extends string | number>(value:T):T{
+    console.log(value)
+    return value
+}
+
+const val1 = processValue<number>(56)
+const val2 = processValue<string>("beauty")
+
